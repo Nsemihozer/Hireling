@@ -1,3 +1,4 @@
+using Application.Core;
 using Domain;
 using MediatR;
 using Persistence;
@@ -6,11 +7,11 @@ namespace Application.Calisans
 {
     public class Details
     {
-        public class Query : IRequest<Calisanlar> {
+        public class Query : IRequest<Result<Calisanlar>> {
             public int CalisanID {get;set;}
          }
 
-        public class Handler : IRequestHandler<Query, Calisanlar>
+        public class Handler : IRequestHandler<Query, Result<Calisanlar>>
         {
             private readonly DataContext context;
             public Handler(DataContext context)
@@ -18,9 +19,11 @@ namespace Application.Calisans
                 this.context = context;
             }
 
-            public async Task<Calisanlar> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<Calisanlar>> Handle(Query request, CancellationToken cancellationToken)
             {
-                return await context.Calisanlar.FindAsync(request.CalisanID);
+                var calisan= await context.Calisanlar.FindAsync(request.CalisanID);
+
+                return Result<Calisanlar>.Success(calisan);
             }
         }
     }

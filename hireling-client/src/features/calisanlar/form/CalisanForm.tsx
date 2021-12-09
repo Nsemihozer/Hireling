@@ -1,3 +1,4 @@
+import { Formik } from "formik";
 import { observer } from "mobx-react-lite";
 import React, { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
 import { Link, useHistory, useParams } from "react-router-dom";
@@ -15,8 +16,6 @@ export default observer(function CalisanForm() {
 
   const [calisan, setCalisan] = useState({} as Calisan);
 
- 
-
   useEffect(() => {
     if (id) {
       loadCalisan(+id).then((calisan) => setCalisan(calisan!));
@@ -33,13 +32,19 @@ export default observer(function CalisanForm() {
   const history = useHistory();
   function handleSubmit() {
     if (calisan.CalisanID) {
-      editCalisan(calisan).then(()=>history.push(`/calisanlar/${calisan.CalisanID}`));
+      editCalisan(calisan).then(() =>
+        history.push(`/calisanlar/${calisan.CalisanID}`)
+      );
     } else {
-      createCalisan(calisan).then((id)=> id !== undefined ? history.push(`/calisanlar/${id}`):alert("Hata oluştu"));
+      createCalisan(calisan).then((id) =>
+        id !== undefined
+          ? history.push(`/calisanlar/${id}`)
+          : alert("Hata oluştu")
+      );
     }
   }
 
-  function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
+  function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
     setCalisan({ ...calisan, [name]: value });
   }
@@ -55,70 +60,83 @@ export default observer(function CalisanForm() {
 
   return (
     <Segment clearing>
-      <Form onSubmit={handleSubmit} autoComplete="off" >
-        <Form.Input
-          placeholder="Adi"
-          value={calisan.Adi || ""}
-          name="Adi"
-          onChange={handleInputChange}
-        />
-        <Form.Input
-          placeholder="Soyadi"
-          value={calisan.Soyadi || ""}
-          name="Soyadi"
-          onChange={handleInputChange}
-        />
-        <Form.Input
-          placeholder="Tc No"
-          value={calisan.TcNo || ""}
-          name="TcNo"
-          onChange={handleInputChange}
-        />
-        <Form.Input
-          placeholder="Telefon"
-          value={calisan.Telefon || ""}
-          name="Telefon"
-          onChange={handleInputChange}
-        />
-        <Form.Input
-          placeholder="Kullanıcı Adı"
-          value={calisan.KullaniciAdi || ""}
-          name="KullaniciAdi"
-          onChange={handleInputChange}
-        />
-        <Form.Input
-          placeholder="Şifre"
-          value={calisan.Sifre || ""}
-          name="Sifre"
-          onChange={handleInputChange}
-        />
-        <Form.Input
-          placeholder="Doğum Tarihi"
-          type="date"
-          value={calisan.DogumTarihi || ""}
-          name="DogumTarihi"
-          onChange={handleInputChange}
-        />
-        <Form.Select
-          placeholder="Ünvan"
-          value={
-            calisan.UnvanID
-              ? unvanlar.find((u) => u.UnvanID === calisan.UnvanID)?.UnvanID
-              : 1
-          }
-          name="UnvanID"
-          options={unvanOptions()}
-          onChange={handleSelectionChange}
-        />
-        <Button
-          loading={loading}
-          floated="right"
-          positive
-          type="submit"
-          content="Ekle"
-        ></Button>
-        <Button as={Link} to='/calisanlar' floated="right" type="button" content="İptal"></Button>
-      </Form>
+      <Formik enableReinitialize
+        initialValues={calisan}
+        onSubmit={(values) => console.log(values)}
+      >
+        {({ values:calisan, handleChange, handleSubmit }) => (
+          <Form onSubmit={handleSubmit} autoComplete="off">
+            <Form.Input
+              placeholder="Adi"
+              value={calisan.Adi || ""}
+              name="Adi"
+              onChange={handleChange}
+            />
+            <Form.Input
+              placeholder="Soyadi"
+              value={calisan.Soyadi || ""}
+              name="Soyadi"
+              onChange={handleChange}
+            />
+            <Form.Input
+              placeholder="Tc No"
+              value={calisan.TcNo || ""}
+              name="TcNo"
+              onChange={handleChange}
+            />
+            <Form.Input
+              placeholder="Telefon"
+              value={calisan.Telefon || ""}
+              name="Telefon"
+              onChange={handleChange}
+            />
+            <Form.Input
+              placeholder="Kullanıcı Adı"
+              value={calisan.KullaniciAdi || ""}
+              name="KullaniciAdi"
+              onChange={handleChange}
+            />
+            <Form.Input
+              placeholder="Şifre"
+              value={calisan.Sifre || ""}
+              name="Sifre"
+              onChange={handleChange}
+            />
+            <Form.Input
+              placeholder="Doğum Tarihi"
+              type="date"
+              value={calisan.DogumTarihi || ""}
+              name="DogumTarihi"
+              onChange={handleChange}
+            />
+            <Form.Select
+              placeholder="Ünvan"
+              value={
+                calisan.UnvanID
+                  ? unvanlar.find((u) => u.UnvanID === calisan.UnvanID)?.UnvanID
+                  : 1
+              }
+              name="UnvanID"
+              options={unvanOptions()}
+              onChange={handleSelectionChange}
+            />
+            <Button
+              loading={loading}
+              floated="right"
+              positive
+              type="submit"
+              content="Ekle"
+            ></Button>
+            <Button
+              as={Link}
+              to="/calisanlar"
+              floated="right"
+              type="button"
+              content="İptal"
+            ></Button>
+          </Form>
+        )}
+      </Formik>
     </Segment>
   );
 });

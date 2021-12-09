@@ -26,10 +26,10 @@ export default class CalisanStore {
           return 0;
       }
       // nulls sort after anything else
-      else if (a.UnvanID === null) {
+      else if (a.UnvanID === undefined) {
           return 1;
       }
-      else if (b.UnvanID === null) {
+      else if (b.UnvanID === undefined) {
           return 1;
       }
       // otherwise, if we're ascending, lowest sorts first

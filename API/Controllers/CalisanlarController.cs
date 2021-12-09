@@ -9,38 +9,41 @@ namespace API.Controllers
 {
     public class CalisanlarController : BaseApiController
     {
-       
+
 
         [HttpGet]
         public async Task<ActionResult<List<Calisanlar>>> GetCalisanlar()
         {
-            return await Mediator.Send(new List.Query());
+            var result = await Mediator.Send(new List.Query());
+            return HandleResult(result);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Calisanlar>> GetCalisan(int id)
+        public async Task<IActionResult> GetCalisan(int id)
         {
-            return await Mediator.Send(new Details.Query{CalisanID=id});
+            var result = await Mediator.Send(new Details.Query { CalisanID = id });
+            return HandleResult(result);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateCalisan(Calisanlar calisan)
         {
-            return Ok(await Mediator.Send(new Create.Command{Calisan=calisan}));
+           var result = await Mediator.Send(new Create.Command { Calisan = calisan });
+           return HandleResult(result);
         }
 
-         [HttpPut("{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCalisan(int id, Calisanlar calisan)
         {
-            calisan.CalisanID=id;
-            return Ok(await Mediator.Send(new Edit.Command{Calisan=calisan}));
+            calisan.CalisanID = id;
+            return HandleResult(await Mediator.Send(new Edit.Command { Calisan = calisan }));
         }
 
-         [HttpDelete("{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCalisan(int id)
         {
-           
-            return Ok(await Mediator.Send(new Delete.Command{CalisanID=id}));
+
+            return HandleResult(await Mediator.Send(new Delete.Command { CalisanID = id }));
         }
     }
 }

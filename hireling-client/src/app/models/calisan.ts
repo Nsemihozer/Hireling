@@ -10,8 +10,8 @@ export interface Calisan {
   DogumTarihi: string;
   IseGirisTarihi: string;
   FirmaID: number;
-  BirimID: number|null;
-  UnvanID: number|null;
+  BirimID?: number;
+  UnvanID?: number;
   Cinsiyet: number|null;
   Medeni: number|null;
   KullaniciAdi: string;

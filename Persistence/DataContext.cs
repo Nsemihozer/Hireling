@@ -9,6 +9,7 @@ namespace Persistence
         {
         }
 
+
         
         public DbSet<Unvanlar> Unvanlar {get;set;}
         public DbSet<Departmanlar> Departmanlar {get;set;}

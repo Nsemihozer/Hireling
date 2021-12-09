@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { Grid, GridColumn } from "semantic-ui-react";
 import LoadingCompnents from "../../../app/layout/LoadingComponent";
 import { useStore } from "../../../app/stores/store";
+import CalisanFilter from "./CalisanFilter";
 import CalisanList from "./CalisanList";
 
 export default observer(function CalisanDashboard() {
@@ -31,7 +32,7 @@ export default observer(function CalisanDashboard() {
         />
       </GridColumn>
       <GridColumn width="6">
-        <h2>Calisan Filtre</h2>
+        <CalisanFilter/>
       </GridColumn>
     </Grid>
   );
