@@ -12,13 +12,15 @@ export default observer(function CalisanDashboard() {
   const {calisanStore,unvanStore}=useStore();
   const {loadCalisanlar,calisanlarRegistry}=calisanStore;
   useEffect(() => {
-   if (calisanlarRegistry.size <=1) {
+   if (calisanlarRegistry.size <1) {
     loadCalisanlar();
    } 
   }, [calisanlarRegistry.size,loadCalisanlar]);
 
   useEffect(() => {
-    unvanStore.loadUnvanlar();
+    if (unvanStore.unvanlar.length<1) {
+      unvanStore.loadUnvanlar();
+    } 
   }, [unvanStore]);
 
 

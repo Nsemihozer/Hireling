@@ -2,20 +2,21 @@ import { Departman } from "./departman";
 import { Unvan } from "./unvan";
 
 export interface Calisan {
-  CalisanID: number;
+  Id: number;
   Adi: string;
   Soyadi: string;
   TcNo: string;
-  SSkNo: string;
-  DogumTarihi: string;
-  IseGirisTarihi: string;
+  SSkNo?: string;
+  DogumTarihi: Date;
+  IseGirisTarihi: Date;
   FirmaID: number;
   BirimID?: number;
   UnvanID?: number;
   Cinsiyet: number|null;
   Medeni: number|null;
-  KullaniciAdi: string;
-  Sifre: string;
+  UserName: string;
+  Email: string;
+  Sifre?: string;
   Telefon: string;
   BrutMaas: number|null;
   NetMaas: number|null;
@@ -23,5 +24,6 @@ export interface Calisan {
   KullanilanIzinSaat: number|null;
   IzinGun: number|null;
   KullanilanIzinGun: number|null;
-
 }
+
+

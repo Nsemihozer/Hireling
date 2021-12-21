@@ -2,6 +2,7 @@ using Application.Core;
 using AutoMapper;
 using Domain;
 using FluentValidation;
+using FluentValidation.Results;
 using MediatR;
 using Persistence;
 
@@ -11,18 +12,18 @@ namespace Application.Calisans
     {
         public class Command : IRequest<Result<Unit>>
         {
-            public Calisanlar Calisan { get; set; }
+            public CalisanDto Calisan { get; set; }
         }
 
         public class CommandValidator : AbstractValidator<Command>
         {
             public CommandValidator()
             {
-                RuleFor(x => x.Calisan).SetValidator(new CalisanValidator());
+                RuleFor(x => x.Calisan).SetValidator(new CalisanDtoValidator());
             }
         }
 
-        public class Handler : IRequestHandler<Command,Result<Unit>>
+        public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             private readonly DataContext context;
             private readonly IMapper mapper;
@@ -34,13 +35,13 @@ namespace Application.Calisans
 
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var calisan = await context.Calisanlar.FindAsync(request.Calisan.CalisanID);
-                 if (calisan==null)
+                var calisan = await context.Calisanlar.FindAsync(request.Calisan.Id);
+                if (calisan == null)
                 {
                     return null;
                 }
-                mapper.Map(request.Calisan, calisan);
-                var result=await context.SaveChangesAsync()>0;
+                calisan = mapper.Map<CalisanDto,Calisanlar>(request.Calisan,calisan);
+                var result = await context.SaveChangesAsync() == 0;
                 if (!result)
                 {
                     return Result<Unit>.Failure("Çalışan Güncellenemedi");

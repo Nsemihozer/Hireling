@@ -21,7 +21,7 @@ export default observer(function CalisanList() {
           </Header>
 
           {calisanlar.map((calisan) => (
-            <CalisanListItem key={calisan.CalisanID} calisan={calisan} />
+            <CalisanListItem key={calisan.Id} calisan={calisan} />
           ))}
         </Fragment>
       ))}

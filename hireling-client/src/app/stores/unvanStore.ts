@@ -10,8 +10,7 @@ export default class UnvanStore {
 
   loadUnvanlar = async () => {
     try {
-      const unvanlar = await agent.Unvanlar.list();
-      this.setunvanlar([]);
+      const unvanlar = await agent.Unvanlar.list();  
       unvanlar.forEach((u) => {
         this.setunvanlar([...this.unvanlar,u]);
       });     

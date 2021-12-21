@@ -7,7 +7,7 @@ export default class CalisanStore {
   selectedCalisan: Calisan | undefined = undefined;
   editMode = false;
   loading = false;
-  loadingInitial = true;
+  loadingInitial = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -15,50 +15,55 @@ export default class CalisanStore {
 
   get getCalisanlarByAd() {
     return Array.from(this.calisanlarRegistry.values()).sort(
-      (a, b) => Date.parse(a.IseGirisTarihi) - Date.parse(b.IseGirisTarihi)
+      (a, b) => a.IseGirisTarihi.getTime() - b.IseGirisTarihi.getTime()
     );
   }
 
   get CalisanlarByUnvan() {
-    return Array.from(this.calisanlarRegistry.values()).sort(
-      (a, b) => {
-        if (a.UnvanID === b.UnvanID) {
-          return 0;
+    return Array.from(this.calisanlarRegistry.values()).sort((a, b) => {
+      if (a.UnvanID === b.UnvanID) {
+        return 0;
       }
       // nulls sort after anything else
       else if (a.UnvanID === undefined) {
-          return 1;
-      }
-      else if (b.UnvanID === undefined) {
-          return 1;
+        return 1;
+      } else if (b.UnvanID === undefined) {
+        return 1;
       }
       // otherwise, if we're ascending, lowest sorts first
       else {
-          return a.UnvanID < b.UnvanID ? -1 : 1;
+        return a.UnvanID < b.UnvanID ? -1 : 1;
       }
-      }
+    });
+  }
+
+  get GroupedCalisan() {
+    return Object.entries(
+      this.CalisanlarByUnvan.reduce((calisanlar, calisan) => {
+        const unvan = calisan.UnvanID ? calisan.UnvanID : 0;
+
+        calisanlar[unvan] = calisanlar[unvan]
+          ? [...calisanlar[unvan], calisan]
+          : [calisan];
+        return calisanlar;
+      }, {} as { [key: number]: Calisan[] })
     );
   }
-
-  get GroupedCalisan(){
-    return Object.entries(
-      this.CalisanlarByUnvan.reduce((calisanlar,calisan)=>{
-        const unvan =calisan.UnvanID ? calisan.UnvanID : 0;
-
-        calisanlar[unvan]=calisanlar[unvan] ? [...calisanlar[unvan],calisan]:[calisan];
-        return calisanlar;
-      },{} as {[key:number]: Calisan[]})
-    )
-  }
-
-
-
 
   loadCalisanlar = async () => {
     this.setLoadingInitial(true);
     try {
       const calisanlar = await agent.Calisanlar.list();
       calisanlar.forEach((calisan) => {
+        if (calisan.Email === null) {
+          calisan.Email = "";
+        }
+        if (calisan.UserName === null) {
+          calisan.UserName = "";
+        }
+        if (calisan.Sifre === undefined) {
+          calisan.Sifre = "";
+        }
         this.setCalisan(calisan);
       });
       this.setLoadingInitial(false);
@@ -77,11 +82,20 @@ export default class CalisanStore {
       this.setLoadingInitial(true);
       try {
         calisan = await agent.Calisanlar.details(id);
+        if (calisan.Email === null) {
+          calisan.Email = "";
+        }
+        if (calisan.UserName === null) {
+          calisan.UserName = "";
+        }
+        if (calisan.Sifre === undefined) {
+          calisan.Sifre = "";
+        }
         this.setCalisan(calisan);
-        runInAction(()=>{
-          this.selectedCalisan=calisan;
-        })
-        
+        runInAction(() => {
+          this.selectedCalisan = calisan;
+        });
+
         this.setLoadingInitial(false);
         return calisan;
       } catch (error) {
@@ -92,9 +106,9 @@ export default class CalisanStore {
   };
 
   private setCalisan = (calisan: Calisan) => {
-    calisan.DogumTarihi = calisan.DogumTarihi.split("T")[0];
-    calisan.IseGirisTarihi = calisan.IseGirisTarihi.split("T")[0];
-    this.calisanlarRegistry.set(calisan.CalisanID, calisan);
+    calisan.DogumTarihi = new Date(calisan.DogumTarihi);
+    calisan.IseGirisTarihi = new Date(calisan.IseGirisTarihi);
+    this.calisanlarRegistry.set(calisan.Id, calisan);
   };
 
   private getCalisan = (id: number) => {
@@ -116,19 +130,22 @@ export default class CalisanStore {
   createCalisan = async (calisan: Calisan) => {
     this.setLoading(true);
     try {
-      if (calisan.IseGirisTarihi === "" || calisan.IseGirisTarihi ===undefined) {
-        calisan.IseGirisTarihi = new Date().toISOString();
+      if (calisan.IseGirisTarihi === undefined) {
+        calisan.IseGirisTarihi = new Date(Date.now());
       }
-      const id = await agent.Calisanlar.create(calisan);
-      calisan.CalisanID = id;
+      const sifre = calisan.Sifre!;
+      const { Sifre, ...calisans } = calisan;
+      const id = await agent.Calisanlar.create(calisans, sifre);
+      calisan.Id = id;
       runInAction(() => {
-        this.calisanlarRegistry.set(calisan.CalisanID, calisan);
+        this.calisanlarRegistry.set(calisan.Id, calisan);
       });
       this.setEditMode(false);
       this.setLoading(false);
       return id;
     } catch (error) {
-      console.log(error);
+      this.setLoading(false);
+      throw error;
     }
   };
 
@@ -137,13 +154,13 @@ export default class CalisanStore {
     try {
       await agent.Calisanlar.update(calisan);
       runInAction(() => {
-        this.calisanlarRegistry.set(calisan.CalisanID, calisan);
+        this.calisanlarRegistry.set(calisan.Id, calisan);
       });
       this.setEditMode(false);
       this.setLoading(false);
     } catch (error) {
-      console.log(error);
       this.setLoading(false);
+      throw error;
     }
   };
 

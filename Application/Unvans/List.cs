@@ -3,24 +3,32 @@ using Domain;
 using System.Collections.Generic;
 using Persistence;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using Application.Core;
+using AutoMapper.QueryableExtensions;
 
 namespace Application.Unvans
 {
     public class List
     {
-        public class Query : IRequest<List<Unvanlar>> { }
+        public class Query : IRequest<Result<List<UnvanDto>>> { }
 
-        public class Handler : IRequestHandler<Query, List<Unvanlar>>
+        public class Handler : IRequestHandler<Query, Result<List<UnvanDto>>>
         {
             private readonly DataContext context;
-            public Handler(DataContext context)
+            private readonly IMapper mapper;
+            public Handler(DataContext context, IMapper mapper)
             {
+                this.mapper = mapper;
                 this.context = context;
             }
 
-            public async Task<List<Unvanlar>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<List<UnvanDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                return await context.Unvanlar.ToListAsync();
+                var result = await context.Unvanlar
+                .ProjectTo<UnvanDto>(mapper.ConfigurationProvider)
+                .ToListAsync(cancellationToken);
+                return Result<List<UnvanDto>>.Success(result);
             }
         }
     }

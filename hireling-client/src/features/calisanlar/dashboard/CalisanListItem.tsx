@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import React from "react";
 import { Link } from "react-router-dom";
 import {
@@ -26,7 +27,7 @@ export default function ActivityListItem({ calisan }: Props) {
           <Item>
             <ItemImage size="tiny" circular src="/assets/user.png"></ItemImage>
             <ItemContent>
-              <ItemHeader as={Link} to={`/calisanlar/${calisan.CalisanID}`}>
+              <ItemHeader as={Link} to={`/calisanlar/${calisan.Id}`}>
                 {calisan.Adi + " " + calisan.Soyadi}
               </ItemHeader>
               <ItemDescription>{calisan.BirimID}</ItemDescription>
@@ -35,8 +36,8 @@ export default function ActivityListItem({ calisan }: Props) {
         </ItemGroup>
       </Segment>
       <Segment>
-        <Icon name="birthday" /> {calisan.DogumTarihi} <br />
-        <Icon name="clock" /> {calisan.IseGirisTarihi} <br />
+        <Icon name="birthday" /> {format(calisan.DogumTarihi,'dd-MM-yyyy HH:mm')} <br />
+        <Icon name="clock" /> {format(calisan.IseGirisTarihi,'dd-MM-yyyy HH:mm')} <br />
         <Icon name="phone" /> {calisan.Telefon}
         <br />
         <Icon name="phone" /> {calisan.Telefon}

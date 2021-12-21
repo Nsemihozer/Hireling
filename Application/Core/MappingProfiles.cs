@@ -1,3 +1,5 @@
+using Application.Calisans;
+using Application.Unvans;
 using AutoMapper;
 using Domain;
 
@@ -7,8 +9,11 @@ namespace Application.Core
     {
         public MappingProfiles()
         {
-            CreateMap<Calisanlar,Calisanlar>();
+            CreateMap<CalisanDto,Calisanlar>();
+            CreateMap<Calisanlar,CalisanDto>();
             CreateMap<Unvanlar,Unvanlar>();
+            CreateMap<Unvanlar,UnvanDto>();
+
         }
     }
 }

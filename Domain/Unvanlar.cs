@@ -10,6 +10,7 @@ namespace Domain
         public int UnvanID { get; set; }
         [Column(TypeName = "nvarchar(100)")]
         public string UnvanAdi { get; set; }
+         public ICollection<Calisanlar> Calisanlar { get; set; }
  
     }
 }

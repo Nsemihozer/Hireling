@@ -28,7 +28,7 @@ export default observer(function CalisanDetail() {
   return (
     <Grid>
       <GridColumn width={10}>
-        <Button as={Link} to={`/duzenle/${calisan.CalisanID}`}/>
+        <Button as={Link} to={`/duzenle/${calisan.Id}`}/>
         <h1>Detail</h1>
       </GridColumn>
       <GridColumn width={6}>

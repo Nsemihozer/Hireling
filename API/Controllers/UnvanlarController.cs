@@ -1,15 +1,18 @@
 using Application.Unvans;
 using Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
+    [AllowAnonymous]
     public class UnvanlarController:BaseApiController
     {
          [HttpGet]
-        public async Task<ActionResult<List<Unvanlar>>> GetUnvanlar()
+        public async Task<ActionResult> GetUnvanlar()
         {
-            return await Mediator.Send(new List.Query());
+            var result= await Mediator.Send(new List.Query());
+             return HandleResult(result);
         }
     }
 }
